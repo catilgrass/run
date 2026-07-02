@@ -54,7 +54,7 @@ if ($args.Count -eq 0) {
             "rs"  { "Rust" }
             "ps1" { "PowerShell" }
         }
-        $entry = "  " + $i.ToString().PadRight($num_w) + ". " + $name.PadRight($max_name) + " [$lang]"
+        $entry = "  " + $i.ToString().PadRight($num_w) + ") " + $name.PadRight($max_name) + " [$lang]"
         Write-Host ("│" + $entry.PadRight($inner_w) + "│")
         $i++
     }
@@ -144,4 +144,3 @@ edition = "2024"
         dotnet run --project "$temp_dir/$target_name.csproj" -- $script_args
     }
 }
-
