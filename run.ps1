@@ -26,6 +26,36 @@ if (Test-Path ".run/src/bin/*.ps1") {
     }
 }
 
+if (Test-Path ".run/src/bin/*.rb") {
+    Get-ChildItem -Path ".run/src/bin/*.rb" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "rb"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.pl") {
+    Get-ChildItem -Path ".run/src/bin/*.pl" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "pl"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.go") {
+    Get-ChildItem -Path ".run/src/bin/*.go" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "go"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.zig") {
+    Get-ChildItem -Path ".run/src/bin/*.zig" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "zig"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.nim") {
+    Get-ChildItem -Path ".run/src/bin/*.nim" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "nim"; Path = $_.FullName }
+    }
+}
+
 if (Test-Path ".run/src/bin/*.exe") {
     Get-ChildItem -Path ".run/src/bin/*.exe" | ForEach-Object {
         $tools[$_.BaseName] = @{ Type = "exe"; Path = $_.FullName }
@@ -59,6 +89,11 @@ if ($args.Count -eq 0) {
             "py"  { "Python" }
             "rs"  { "Rust" }
             "ps1" { "PowerShell" }
+            "rb"  { "Ruby" }
+            "pl"  { "Perl" }
+            "go"  { "Go" }
+            "zig" { "Zig" }
+            "nim" { "Nim" }
             "exe" { "Binary" }
         }
         $entry = "  " + $i.ToString().PadRight($num_w) + ") " + $name.PadRight($max_name) + " [$lang]"
@@ -95,6 +130,21 @@ $info = $tools[$target_name]
 switch ($info.Type) {
     "ps1" {
         & $info.Path @script_args
+    }
+    "rb" {
+        ruby $info.Path $script_args
+    }
+    "pl" {
+        perl $info.Path $script_args
+    }
+    "go" {
+        go run $info.Path $script_args
+    }
+    "zig" {
+        zig run $info.Path $script_args
+    }
+    "nim" {
+        nim r --hints:off $info.Path $script_args
     }
     "exe" {
         & $info.Path $script_args

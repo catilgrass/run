@@ -32,6 +32,41 @@ for file in .run/src/bin/*.sh; do
     fi
 done
 
+for file in .run/src/bin/*.rb; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .rb)
+        tools["$name"]="rb"
+    fi
+done
+
+for file in .run/src/bin/*.pl; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .pl)
+        tools["$name"]="pl"
+    fi
+done
+
+for file in .run/src/bin/*.go; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .go)
+        tools["$name"]="go"
+    fi
+done
+
+for file in .run/src/bin/*.zig; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .zig)
+        tools["$name"]="zig"
+    fi
+done
+
+for file in .run/src/bin/*.nim; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .nim)
+        tools["$name"]="nim"
+    fi
+done
+
 for file in .run/src/bin/*; do
     if [ -f "$file" ]; then
         name=$(basename "$file")
@@ -72,6 +107,11 @@ if [ $# -eq 0 ]; then
             py) lang="Python";;
             rs) lang="Rust";;
             sh) lang="Shell";;
+            rb) lang="Ruby";;
+            pl) lang="Perl";;
+            go) lang="Go";;
+            zig) lang="Zig";;
+            nim) lang="Nim";;
             binary) lang="Binary";;
         esac
         entry=$(printf "  %-*d) %-*s [%s]" $num_w $i $max_name $name $lang)
@@ -154,6 +194,21 @@ PROPS
 CSPROJ
         cp ".run/src/bin/$target_name.cs" "$temp_dir/Program.cs"
         dotnet run --project "$temp_dir/$target_name.csproj" -- "$@"
+        ;;
+    rb)
+        ruby ".run/src/bin/$target_name.rb" "$@"
+        ;;
+    pl)
+        perl ".run/src/bin/$target_name.pl" "$@"
+        ;;
+    go)
+        go run ".run/src/bin/$target_name.go" "$@"
+        ;;
+    zig)
+        zig run ".run/src/bin/$target_name.zig" "$@"
+        ;;
+    nim)
+        nim r --hints:off ".run/src/bin/$target_name.nim" "$@"
         ;;
     binary)
         chmod +x ".run/src/bin/$target_name"
