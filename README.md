@@ -17,6 +17,7 @@ For Linux:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/catilgrass/run/refs/heads/master/install/install.sh | bash
+chmod +x run.sh
 ```
 
 For Windows:
