@@ -12,6 +12,7 @@ git clone https://github.com/catilgrass/run "$REPO_DIR"
 
 echo "Removing unwanted files..."
 rm -f "$REPO_DIR/README.md" "$REPO_DIR/LICENSE"
+rm -f "$REPO_DIR/.nojekyll" "$REPO_DIR/index.html"
 rm -rf "$REPO_DIR/install"
 
 echo "Removing git data..."

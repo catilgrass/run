@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>run - script runner</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+                background: #0d1117;
+                color: #e6edf3;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+            }
+            .card {
+                background: #161b22;
+                border: 1px solid #30363d;
+                border-radius: 16px;
+                padding: 3rem 4rem;
+                max-width: 720px;
+                width: 100%;
+                text-align: center;
+            }
+            h1 {
+                font-size: 3rem;
+                font-weight: 800;
+                letter-spacing: -0.03em;
+                color: #e6edf3;
+            }
+            h1 span {
+                color: #f85149;
+            }
+            .tagline {
+                font-size: 1.1rem;
+                color: #8b949e;
+                margin: 0.5rem 0 1.5rem;
+                font-style: italic;
+            }
+            .desc {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                color: #8b949e;
+                margin-bottom: 2rem;
+            }
+            .desc code {
+                background: #21262d;
+                color: #e6edf3;
+                padding: 0.15em 0.5em;
+                border-radius: 4px;
+                font-size: 0.85em;
+            }
+            .install-box {
+                background: #0d1117;
+                border: 1px solid #30363d;
+                border-radius: 12px;
+                padding: 1.5rem;
+                text-align: left;
+                margin-bottom: 1.5rem;
+            }
+            .install-box .label {
+                color: #8b949e;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.75rem;
+                display: block;
+            }
+            .install-box code {
+                display: block;
+                font-family:
+                    "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas",
+                    monospace;
+                font-size: 1rem;
+                line-height: 1.8;
+                padding: 0.25rem 0;
+            }
+            .install-box code .prompt {
+                color: #3fb950;
+            }
+            .install-box code .comment {
+                color: #8b949e;
+            }
+            .install-box code .highlight {
+                color: #58a6ff;
+            }
+            .os-tabs {
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+                justify-content: center;
+            }
+            .os-tab {
+                padding: 0.4rem 1.2rem;
+                border-radius: 8px;
+                border: 1px solid #30363d;
+                background: transparent;
+                color: #8b949e;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: all 0.15s;
+                font-family: inherit;
+            }
+            .os-tab.active {
+                background: #1f6feb;
+                color: #fff;
+                border-color: #1f6feb;
+            }
+            .os-tab:hover {
+                border-color: #8b949e;
+                color: #e6edf3;
+            }
+            .usage-box {
+                background: #0d1117;
+                border: 1px solid #30363d;
+                border-radius: 10px;
+                padding: 1.2rem 1.5rem;
+                text-align: left;
+                margin-top: 0.5rem;
+            }
+            .usage-box .label {
+                color: #8b949e;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+            .usage-box code {
+                display: block;
+                font-family:
+                    "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas",
+                    monospace;
+                font-size: 0.9rem;
+                line-height: 1.8;
+            }
+            .usage-box code .prompt {
+                color: #3fb950;
+            }
+            .usage-box code .comment {
+                color: #8b949e;
+            }
+            .usage-box code .highlight {
+                color: #d2a8ff;
+            }
+            .footer {
+                margin-top: 2rem;
+                font-size: 0.8rem;
+                color: #484f58;
+            }
+            .footer a {
+                color: #58a6ff;
+                text-decoration: none;
+            }
+            .footer a:hover {
+                text-decoration: underline;
+            }
+
+            @media (max-width: 600px) {
+                .card {
+                    padding: 2rem 1.5rem;
+                }
+                h1 {
+                    font-size: 2rem;
+                }
+                .install-box code {
+                    font-size: 0.85rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>
+                <span id="prefix">./</span><span>run</span
+                ><span id="suffix">.sh</span>
+            </h1>
+            <p class="tagline">Screw "make", I just want a script runner</p>
+            <p class="desc">
+                Drop any script into <code>.run/src/bin/</code> — Rust, C#,
+                Python, Shell, Ruby, Go, etc.<br />
+                One command to list, one command to run. No Makefile, no config.
+            </p>
+
+            <div class="os-tabs">
+                <button class="os-tab active" onclick="switchOS('linux')">
+                    Linux / macOS
+                </button>
+                <button class="os-tab" onclick="switchOS('windows')">
+                    Windows
+                </button>
+            </div>
+
+            <div class="install-box" id="install-linux">
+                <span class="label">Install</span>
+                <code
+                    ><span class="prompt">$</span> curl -fsSL
+                    https://raw.githubusercontent.com/catilgrass/run/refs/heads/master/install/install.sh
+                    | bash</code
+                >
+                <code><span class="prompt">$</span> chmod +x run.sh</code>
+            </div>
+
+            <div class="install-box" id="install-windows" style="display: none">
+                <span class="label">Install</span>
+                <code
+                    ><span class="prompt">PS&gt;</span> iwr -useb
+                    https://raw.githubusercontent.com/catilgrass/run/refs/heads/master/install/install.ps1
+                    | iex</code
+                >
+            </div>
+
+            <div class="usage-box" id="usage-linux">
+                <span class="label">Usage</span>
+                <code
+                    ><span class="prompt">$</span> ./run.sh
+                    <span class="comment"># list all scripts</span></code
+                >
+                <code
+                    ><span class="prompt">$</span> ./run.sh
+                    <span class="highlight">hello</span>
+                    <span class="comment"># run by name</span></code
+                >
+                <code
+                    ><span class="prompt">$</span> ./run.sh
+                    <span class="highlight">3</span>
+                    <span class="comment"># run by number</span></code
+                >
+                <code
+                    ><span class="prompt">$</span> ./run.sh
+                    <span class="highlight">3 Hello World</span>
+                    <span class="comment"># with arguments</span></code
+                >
+            </div>
+            <div class="usage-box" id="usage-windows" style="display: none">
+                <span class="label">Usage</span>
+                <code
+                    ><span class="prompt">PS&gt;</span> .\run.ps1
+                    <span class="comment"># list all scripts</span></code
+                >
+                <code
+                    ><span class="prompt">PS&gt;</span> .\run.ps1
+                    <span class="highlight">hello</span>
+                    <span class="comment"># run by name</span></code
+                >
+                <code
+                    ><span class="prompt">PS&gt;</span> .\run.ps1
+                    <span class="highlight">3</span>
+                    <span class="comment"># run by number</span></code
+                >
+                <code
+                    ><span class="prompt">PS&gt;</span> .\run.ps1
+                    <span class="highlight">3 Hello World</span>
+                    <span class="comment"># with arguments</span></code
+                >
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="https://github.com/catilgrass/run">GitHub</a> &middot;
+            <a href="https://github.com/catilgrass/run/blob/master/LICENSE"
+                >WTFPL</a
+            >
+        </div>
+
+        <script>
+            function switchOS(os) {
+                document
+                    .querySelectorAll(".os-tab")
+                    .forEach((t) => t.classList.remove("active"));
+                document
+                    .querySelectorAll(".install-box")
+                    .forEach((b) => (b.style.display = "none"));
+                document
+                    .querySelectorAll(".usage-box")
+                    .forEach((b) => (b.style.display = "none"));
+                document
+                    .querySelector(`.os-tab[onclick*="${os}"]`)
+                    .classList.add("active");
+                document.getElementById(`install-${os}`).style.display =
+                    "block";
+                document.getElementById(`usage-${os}`).style.display = "block";
+                document.getElementById("prefix").textContent =
+                    os === "windows" ? ".\\" : "./";
+                document.getElementById("suffix").textContent =
+                    os === "windows" ? ".ps1" : ".sh";
+            }
+        </script>
+    </body>
+</html>

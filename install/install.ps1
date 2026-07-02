@@ -9,6 +9,7 @@ git clone "https://github.com/catilgrass/run" $repoDir
 
 Write-Host "Removing unwanted files..."
 Remove-Item -Path "$repoDir/README.md", "$repoDir/LICENSE" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$repoDir/.nojekyll", "$repoDir/index.html" -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "$repoDir/install" -Recurse -Force -ErrorAction SilentlyContinue
 
 Write-Host "Removing git data..."
