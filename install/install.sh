@@ -19,6 +19,7 @@ rm -rf "$REPO_DIR/.git"
 
 echo "Installing files..."
 cp -a "$REPO_DIR/." .
+chmod +x run.sh
 
 echo "Cleaning up temporary directory..."
 rm -rf "$TEMP_DIR"
