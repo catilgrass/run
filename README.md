@@ -1,4 +1,6 @@
-# Screw "make", I just want a script runner
+# 'run'
+
+> Screw "make", I just want a script runner
 
 Sometimes when working on projects, I need cross-platform operation. I don't want to install something like `just` or `make`. I just want to write some scripts, drop them in, and run them. That's it.
 
