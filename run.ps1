@@ -2,57 +2,15 @@
 
 $tools = @{}
 
-if (Test-Path ".run/src/bin/*.cs") {
-    Get-ChildItem -Path ".run/src/bin/*.cs" | ForEach-Object {
-        $tools[$_.BaseName] = @{ Type = "cs"; Path = $_.FullName }
-    }
-}
-
-if (Test-Path ".run/src/bin/*.rs") {
-    Get-ChildItem -Path ".run/src/bin/*.rs" | ForEach-Object {
-        $tools[$_.BaseName] = @{ Type = "rs"; Path = $_.FullName }
-    }
-}
-
-if (Test-Path ".run/src/bin/*.py") {
-    Get-ChildItem -Path ".run/src/bin/*.py" | ForEach-Object {
-        $tools[$_.BaseName] = @{ Type = "py"; Path = $_.FullName }
-    }
-}
-
 if (Test-Path ".run/src/bin/*.ps1") {
     Get-ChildItem -Path ".run/src/bin/*.ps1" | ForEach-Object {
         $tools[$_.BaseName] = @{ Type = "ps1"; Path = $_.FullName }
     }
 }
 
-if (Test-Path ".run/src/bin/*.rb") {
-    Get-ChildItem -Path ".run/src/bin/*.rb" | ForEach-Object {
-        $tools[$_.BaseName] = @{ Type = "rb"; Path = $_.FullName }
-    }
-}
-
-if (Test-Path ".run/src/bin/*.pl") {
-    Get-ChildItem -Path ".run/src/bin/*.pl" | ForEach-Object {
-        $tools[$_.BaseName] = @{ Type = "pl"; Path = $_.FullName }
-    }
-}
-
-if (Test-Path ".run/src/bin/*.go") {
-    Get-ChildItem -Path ".run/src/bin/*.go" | ForEach-Object {
-        $tools[$_.BaseName] = @{ Type = "go"; Path = $_.FullName }
-    }
-}
-
-if (Test-Path ".run/src/bin/*.zig") {
-    Get-ChildItem -Path ".run/src/bin/*.zig" | ForEach-Object {
-        $tools[$_.BaseName] = @{ Type = "zig"; Path = $_.FullName }
-    }
-}
-
-if (Test-Path ".run/src/bin/*.nim") {
-    Get-ChildItem -Path ".run/src/bin/*.nim" | ForEach-Object {
-        $tools[$_.BaseName] = @{ Type = "nim"; Path = $_.FullName }
+if (Test-Path ".run/src/bin/*.cs") {
+    Get-ChildItem -Path ".run/src/bin/*.cs" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "cs"; Path = $_.FullName }
     }
 }
 
@@ -62,8 +20,50 @@ if (Test-Path ".run/src/bin/*.exe") {
     }
 }
 
+if (Test-Path ".run/src/bin/*.go") {
+    Get-ChildItem -Path ".run/src/bin/*.go" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "go"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.nim") {
+    Get-ChildItem -Path ".run/src/bin/*.nim" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "nim"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.pl") {
+    Get-ChildItem -Path ".run/src/bin/*.pl" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "pl"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.py") {
+    Get-ChildItem -Path ".run/src/bin/*.py" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "py"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.rb") {
+    Get-ChildItem -Path ".run/src/bin/*.rb" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "rb"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.rs") {
+    Get-ChildItem -Path ".run/src/bin/*.rs" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "rs"; Path = $_.FullName }
+    }
+}
+
+if (Test-Path ".run/src/bin/*.zig") {
+    Get-ChildItem -Path ".run/src/bin/*.zig" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "zig"; Path = $_.FullName }
+    }
+}
+
 if ($args.Count -eq 0) {
-    $sorted = $tools.Keys | Sort-Object
+    $sorted = $tools.Keys | Sort-Object @{Expression={if ($tools[$_].Type -eq 'ps1') {0} else {1}}}, {$_}
     $total = $sorted.Count
     $num_w = $total.ToString().Length
 
@@ -85,16 +85,16 @@ if ($args.Count -eq 0) {
     foreach ($name in $sorted) {
         $type = $tools[$name].Type
         $lang = switch ($type) {
-            "cs"  { "C#" }
-            "py"  { "Python" }
-            "rs"  { "Rust" }
             "ps1" { "PowerShell" }
-            "rb"  { "Ruby" }
-            "pl"  { "Perl" }
-            "go"  { "Go" }
-            "zig" { "Zig" }
-            "nim" { "Nim" }
+            "cs"  { "C#" }
             "exe" { "Binary" }
+            "go"  { "Go" }
+            "nim" { "Nim" }
+            "pl"  { "Perl" }
+            "py"  { "Python" }
+            "rb"  { "Ruby" }
+            "rs"  { "Rust" }
+            "zig" { "Zig" }
         }
         $displayName = $name -replace '[_\-]', ' '
         $entry = "  " + $i.ToString().PadRight($num_w) + ") " + $displayName.PadRight($max_name) + " [$lang]"
@@ -110,7 +110,7 @@ if ($args.Count -eq 0) {
 $target_name = $args[0]
 
 if ($target_name -match '^\d+$') {
-    $sorted = $tools.Keys | Sort-Object
+    $sorted = $tools.Keys | Sort-Object @{Expression={if ($tools[$_].Type -eq 'ps1') {0} else {1}}}, {$_}
     $idx = [int]$target_name - 1
     if ($idx -ge 0 -and $idx -lt $sorted.Count) {
         $target_name = $sorted[$idx]
@@ -145,47 +145,6 @@ switch ($info.Type) {
     "ps1" {
         & $info.Path @script_args
     }
-    "rb" {
-        ruby $info.Path $script_args
-    }
-    "pl" {
-        perl $info.Path $script_args
-    }
-    "go" {
-        go run $info.Path $script_args
-    }
-    "zig" {
-        zig run $info.Path $script_args
-    }
-    "nim" {
-        nim r --hints:off $info.Path $script_args
-    }
-    "exe" {
-        & $info.Path $script_args
-    }
-    "py" {
-        python $info.Path $script_args
-    }
-    "rs" {
-        if (-not (Test-Path ".run/Cargo.toml")) {
-@"
-[package]
-name = "run_rust"
-version = "0.1.0"
-edition = "2024"
-
-[workspace]
-
-[dependencies]
-"@ | Set-Content -Path ".run/Cargo.toml"
-        }
-        cargo build --manifest-path ".run/Cargo.toml" --target-dir ".run/target" --bin $target_name --quiet
-        $binary = ".run/target/debug/$target_name.exe"
-        if (-not (Test-Path $binary)) {
-            $binary = ".run/target/debug/$target_name"
-        }
-        & $binary $script_args
-    }
     "cs" {
         $temp_dir = ".run/target/csproj/$target_name"
         $null = New-Item -ItemType Directory -Path $temp_dir -Force
@@ -216,6 +175,47 @@ edition = "2024"
         Copy-Item -Path $info.Path -Destination "$temp_dir/Program.cs" -Force
 
         dotnet run --project "$temp_dir/$target_name.csproj" -- $script_args
+    }
+    "exe" {
+        & $info.Path $script_args
+    }
+    "go" {
+        go run $info.Path $script_args
+    }
+    "nim" {
+        nim r --hints:off $info.Path $script_args
+    }
+    "pl" {
+        perl $info.Path $script_args
+    }
+    "py" {
+        python $info.Path $script_args
+    }
+    "rb" {
+        ruby $info.Path $script_args
+    }
+    "rs" {
+        if (-not (Test-Path ".run/Cargo.toml")) {
+@"
+[package]
+name = "run_rust"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+"@ | Set-Content -Path ".run/Cargo.toml"
+        }
+        cargo build --manifest-path ".run/Cargo.toml" --target-dir ".run/target" --bin $target_name --quiet
+        $binary = ".run/target/debug/$target_name.exe"
+        if (-not (Test-Path $binary)) {
+            $binary = ".run/target/debug/$target_name"
+        }
+        & $binary $script_args
+    }
+    "zig" {
+        zig run $info.Path $script_args
     }
 }
 

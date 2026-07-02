@@ -4,66 +4,10 @@ cd "$(dirname "$0")" || exit 1
 
 declare -A tools
 
-for file in .run/src/bin/*.cs; do
-    if [ -f "$file" ]; then
-        name=$(basename "$file" .cs)
-        tools["$name"]="cs"
-    fi
-done
-
-for file in .run/src/bin/*.rs; do
-    if [ -f "$file" ]; then
-        name=$(basename "$file" .rs)
-        tools["$name"]="rs"
-    fi
-done
-
-for file in .run/src/bin/*.py; do
-    if [ -f "$file" ]; then
-        name=$(basename "$file" .py)
-        tools["$name"]="py"
-    fi
-done
-
 for file in .run/src/bin/*.sh; do
     if [ -f "$file" ]; then
         name=$(basename "$file" .sh)
         tools["$name"]="sh"
-    fi
-done
-
-for file in .run/src/bin/*.rb; do
-    if [ -f "$file" ]; then
-        name=$(basename "$file" .rb)
-        tools["$name"]="rb"
-    fi
-done
-
-for file in .run/src/bin/*.pl; do
-    if [ -f "$file" ]; then
-        name=$(basename "$file" .pl)
-        tools["$name"]="pl"
-    fi
-done
-
-for file in .run/src/bin/*.go; do
-    if [ -f "$file" ]; then
-        name=$(basename "$file" .go)
-        tools["$name"]="go"
-    fi
-done
-
-for file in .run/src/bin/*.zig; do
-    if [ -f "$file" ]; then
-        name=$(basename "$file" .zig)
-        tools["$name"]="zig"
-    fi
-done
-
-for file in .run/src/bin/*.nim; do
-    if [ -f "$file" ]; then
-        name=$(basename "$file" .nim)
-        tools["$name"]="nim"
     fi
 done
 
@@ -76,8 +20,72 @@ for file in .run/src/bin/*; do
     fi
 done
 
+for file in .run/src/bin/*.cs; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .cs)
+        tools["$name"]="cs"
+    fi
+done
+
+for file in .run/src/bin/*.go; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .go)
+        tools["$name"]="go"
+    fi
+done
+
+for file in .run/src/bin/*.nim; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .nim)
+        tools["$name"]="nim"
+    fi
+done
+
+for file in .run/src/bin/*.pl; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .pl)
+        tools["$name"]="pl"
+    fi
+done
+
+for file in .run/src/bin/*.py; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .py)
+        tools["$name"]="py"
+    fi
+done
+
+for file in .run/src/bin/*.rb; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .rb)
+        tools["$name"]="rb"
+    fi
+done
+
+for file in .run/src/bin/*.rs; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .rs)
+        tools["$name"]="rs"
+    fi
+done
+
+for file in .run/src/bin/*.zig; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file" .zig)
+        tools["$name"]="zig"
+    fi
+done
+
 if [ $# -eq 0 ]; then
-    sorted_names=($(echo "${!tools[@]}" | tr ' ' '\n' | sort))
+    sorted_names=($(
+        for name in "${!tools[@]}"; do
+            if [ "${tools[$name]}" = "sh" ]; then
+                echo "0 $name"
+            else
+                echo "1 $name"
+            fi
+        done | sort | while read -r _ n; do echo "$n"; done
+    ))
     total=${#sorted_names[@]}
     num_w=${#total}
 
@@ -103,16 +111,16 @@ if [ $# -eq 0 ]; then
     for name in "${sorted_names[@]}"; do
         type="${tools[$name]}"
         case "$type" in
-            cs) lang="C#";;
-            py) lang="Python";;
-            rs) lang="Rust";;
             sh) lang="Shell";;
-            rb) lang="Ruby";;
-            pl) lang="Perl";;
-            go) lang="Go";;
-            zig) lang="Zig";;
-            nim) lang="Nim";;
             binary) lang="Binary";;
+            cs) lang="C#";;
+            go) lang="Go";;
+            nim) lang="Nim";;
+            pl) lang="Perl";;
+            py) lang="Python";;
+            rb) lang="Ruby";;
+            rs) lang="Rust";;
+            zig) lang="Zig";;
         esac
         display_name=$(echo "$name" | tr '_-' '  ')
         entry=$(printf "  %-*d) %-*s [%s]" $num_w $i $max_name "$display_name" $lang)
@@ -129,7 +137,15 @@ target_name="$1"
 shift
 
 if [[ "$target_name" =~ ^[0-9]+$ ]]; then
-    sorted=($(echo "${!tools[@]}" | tr ' ' '\n' | sort))
+    sorted=($(
+        for name in "${!tools[@]}"; do
+            if [ "${tools[$name]}" = "sh" ]; then
+                echo "0 $name"
+            else
+                echo "1 $name"
+            fi
+        done | sort | while read -r _ n; do echo "$n"; done
+    ))
     idx=$((target_name - 1))
     if [ "$idx" -ge 0 ] && [ "$idx" -lt "${#sorted[@]}" ]; then
         target_name="${sorted[$idx]}"
@@ -164,24 +180,9 @@ case "$type" in
         chmod +x ".run/src/bin/$target_name.sh"
         ".run/src/bin/$target_name.sh" "$@"
         ;;
-    py)
-        python ".run/src/bin/$target_name.py" "$@"
-        ;;
-    rs)
-        if [ ! -f ".run/Cargo.toml" ]; then
-            cat > ".run/Cargo.toml" <<'EOF'
-[package]
-name = "run_rust"
-version = "0.1.0"
-edition = "2024"
-
-[workspace]
-
-[dependencies]
-EOF
-        fi
-        cargo build --manifest-path ".run/Cargo.toml" --target-dir ".run/target" --bin "$target_name" --quiet
-        ".run/target/debug/$target_name" "$@"
+    binary)
+        chmod +x ".run/src/bin/$target_name"
+        ".run/src/bin/$target_name" "$@"
         ;;
     cs)
         temp_dir=".run/target/csproj/$target_name"
@@ -209,23 +210,38 @@ CSPROJ
         cp ".run/src/bin/$target_name.cs" "$temp_dir/Program.cs"
         dotnet run --project "$temp_dir/$target_name.csproj" -- "$@"
         ;;
-    rb)
-        ruby ".run/src/bin/$target_name.rb" "$@"
-        ;;
-    pl)
-        perl ".run/src/bin/$target_name.pl" "$@"
-        ;;
     go)
         go run ".run/src/bin/$target_name.go" "$@"
-        ;;
-    zig)
-        zig run ".run/src/bin/$target_name.zig" "$@"
         ;;
     nim)
         nim r --hints:off ".run/src/bin/$target_name.nim" "$@"
         ;;
-    binary)
-        chmod +x ".run/src/bin/$target_name"
-        ".run/src/bin/$target_name" "$@"
+    pl)
+        perl ".run/src/bin/$target_name.pl" "$@"
+        ;;
+    py)
+        python ".run/src/bin/$target_name.py" "$@"
+        ;;
+    rb)
+        ruby ".run/src/bin/$target_name.rb" "$@"
+        ;;
+    rs)
+        if [ ! -f ".run/Cargo.toml" ]; then
+            cat > ".run/Cargo.toml" <<'EOF'
+[package]
+name = "run_rust"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+EOF
+        fi
+        cargo build --manifest-path ".run/Cargo.toml" --target-dir ".run/target" --bin "$target_name" --quiet
+        ".run/target/debug/$target_name" "$@"
+        ;;
+    zig)
+        zig run ".run/src/bin/$target_name.zig" "$@"
         ;;
 esac
