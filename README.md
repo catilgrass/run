@@ -18,14 +18,14 @@ Any script can be dropped in. After that, just run `.\run.ps1 script-name` or `.
 For Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/catilgrass/run/refs/heads/master/install/install.sh | bash
+curl -fsSL https://catilgrass.github.io/run/install.sh | bash
 chmod +x run.sh
 ```
 
 For Windows:
 
 ```bash
-iwr -useb https://raw.githubusercontent.com/catilgrass/run/refs/heads/master/install/install.ps1 | iex
+iwr -useb https://catilgrass.github.io/run/install.ps1 | iex
 ```
 
 ## Or manually install
