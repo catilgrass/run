@@ -20,3 +20,17 @@ echo "Cleaning up..."
 rm -rf "$TEMP_DIR"
 
 echo "Done!"
+
+echo ""
+echo "Remove all example scripts? [Y/n]"
+read -r response
+case "$response" in
+    [nN]|[nN][oO])
+        echo "Skipped."
+        ;;
+    *)
+        echo "Removing example scripts..."
+        rm -f .run/src/bin/*
+        echo "Done!"
+        ;;
+esac

@@ -18,3 +18,13 @@ Start-Sleep -Milliseconds 200
 Remove-Item -Path $tempDir -Recurse -Force
 
 Write-Host "Done!"
+
+Write-Host ""
+$response = Read-Host "Remove all example scripts? [Y/n]"
+if ($response -notmatch '^[nN]') {
+    Write-Host "Removing example scripts..."
+    Remove-Item -Path ".run/src/bin/*" -Force
+    Write-Host "Done!"
+} else {
+    Write-Host "Skipped."
+}
