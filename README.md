@@ -28,6 +28,30 @@ For Windows:
 iwr -useb https://raw.githubusercontent.com/catilgrass/run/refs/heads/master/install/install.ps1 | iex
 ```
 
+## Or manually install
+
+For Linux:
+
+```bash
+cd your-project
+git clone https://github.com/catilgrass/run
+mv run/.run run/run.ps1 run/run.sh ./
+rm -rf run
+```
+
+For Windows:
+
+```powershell
+cd your-project
+git clone https://github.com/catilgrass/run
+
+Move-Item -Path "run/.run" -Destination "./.run" -Force
+Move-Item -Path "run/run.ps1" -Destination "./run.ps1" -Force
+Move-Item -Path "run/run.sh" -Destination "./run.sh" -Force
+
+Remove-Item -Path "run" -Recurse -Force
+```
+
 ## Usage
 
 ```bash
