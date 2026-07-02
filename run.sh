@@ -32,6 +32,15 @@ for file in .run/src/bin/*.sh; do
     fi
 done
 
+for file in .run/src/bin/*; do
+    if [ -f "$file" ]; then
+        name=$(basename "$file")
+        if [[ ! "$name" == *.* ]]; then
+            tools["$name"]="binary"
+        fi
+    fi
+done
+
 if [ $# -eq 0 ]; then
     sorted_names=($(echo "${!tools[@]}" | tr ' ' '\n' | sort))
     total=${#sorted_names[@]}
@@ -63,6 +72,7 @@ if [ $# -eq 0 ]; then
             py) lang="Python";;
             rs) lang="Rust";;
             sh) lang="Shell";;
+            binary) lang="Binary";;
         esac
         entry=$(printf "  %-*d) %-*s [%s]" $num_w $i $max_name $name $lang)
         printf "│%-*s│\n" $inner_w "$entry"
@@ -144,5 +154,9 @@ PROPS
 CSPROJ
         cp ".run/src/bin/$target_name.cs" "$temp_dir/Program.cs"
         dotnet run --project "$temp_dir/$target_name.csproj" -- "$@"
+        ;;
+    binary)
+        chmod +x ".run/src/bin/$target_name"
+        ".run/src/bin/$target_name" "$@"
         ;;
 esac

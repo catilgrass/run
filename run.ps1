@@ -26,6 +26,12 @@ if (Test-Path ".run/src/bin/*.ps1") {
     }
 }
 
+if (Test-Path ".run/src/bin/*.exe") {
+    Get-ChildItem -Path ".run/src/bin/*.exe" | ForEach-Object {
+        $tools[$_.BaseName] = @{ Type = "exe"; Path = $_.FullName }
+    }
+}
+
 if ($args.Count -eq 0) {
     $sorted = $tools.Keys | Sort-Object
     $total = $sorted.Count
@@ -53,6 +59,7 @@ if ($args.Count -eq 0) {
             "py"  { "Python" }
             "rs"  { "Rust" }
             "ps1" { "PowerShell" }
+            "exe" { "Binary" }
         }
         $entry = "  " + $i.ToString().PadRight($num_w) + ") " + $name.PadRight($max_name) + " [$lang]"
         Write-Host ("│" + $entry.PadRight($inner_w) + "│")
@@ -88,6 +95,9 @@ $info = $tools[$target_name]
 switch ($info.Type) {
     "ps1" {
         & $info.Path @script_args
+    }
+    "exe" {
+        & $info.Path $script_args
     }
     "py" {
         python $info.Path $script_args
