@@ -218,3 +218,5 @@ edition = "2024"
         dotnet run --project "$temp_dir/$target_name.csproj" -- $script_args
     }
 }
+
+exit $LASTEXITCODE
