@@ -28,6 +28,15 @@ For Windows:
 iwr -useb https://raw.githubusercontent.com/catilgrass/run/refs/heads/master/install/install.ps1 | iex
 ```
 
+## Usage
+
+```bash
+./run.sh                 # Show all scripts
+./run.sh python-script   # Run any script
+./run.sh 3               # Run by number
+./run.sh 3 Hello World   # Run with arguments
+```
+
 ## License
 
 WTFPL — drop it into your project and use it.
