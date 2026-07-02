@@ -114,7 +114,8 @@ if [ $# -eq 0 ]; then
             nim) lang="Nim";;
             binary) lang="Binary";;
         esac
-        entry=$(printf "  %-*d) %-*s [%s]" $num_w $i $max_name $name $lang)
+        display_name=$(echo "$name" | tr '_-' '  ')
+        entry=$(printf "  %-*d) %-*s [%s]" $num_w $i $max_name "$display_name" $lang)
         printf "│%-*s│\n" $inner_w "$entry"
         i=$((i + 1))
     done
@@ -139,8 +140,21 @@ if [[ "$target_name" =~ ^[0-9]+$ ]]; then
 fi
 
 if [ -z "${tools[$target_name]}" ]; then
-    echo "Error: target '$target_name' does not exist"
-    exit 1
+    normalized_user=$(echo "$target_name" | tr '[:upper:]' '[:lower:]' | sed 's/[_. -]//g')
+    found=""
+    for existing_name in "${!tools[@]}"; do
+        normalized_existing=$(echo "$existing_name" | tr '[:upper:]' '[:lower:]' | sed 's/[_. -]//g')
+        if [ "$normalized_user" = "$normalized_existing" ]; then
+            found="$existing_name"
+            break
+        fi
+    done
+    if [ -n "$found" ]; then
+        target_name="$found"
+    else
+        echo "Error: target '$target_name' does not exist"
+        exit 1
+    fi
 fi
 
 type="${tools[$target_name]}"

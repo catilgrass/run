@@ -96,7 +96,8 @@ if ($args.Count -eq 0) {
             "nim" { "Nim" }
             "exe" { "Binary" }
         }
-        $entry = "  " + $i.ToString().PadRight($num_w) + ") " + $name.PadRight($max_name) + " [$lang]"
+        $displayName = $name -replace '[_\-]', ' '
+        $entry = "  " + $i.ToString().PadRight($num_w) + ") " + $displayName.PadRight($max_name) + " [$lang]"
         Write-Host ("│" + $entry.PadRight($inner_w) + "│")
         $i++
     }
@@ -120,8 +121,21 @@ if ($target_name -match '^\d+$') {
 }
 
 if (-not $tools.ContainsKey($target_name)) {
-    Write-Host "Error: target '$target_name' does not exist"
-    exit 1
+    $normalized = $target_name.ToLower() -replace '[ _\-\.]', ''
+    $found = $null
+    foreach ($key in $tools.Keys) {
+        $keyNormalized = $key.ToLower() -replace '[ _\-\.]', ''
+        if ($normalized -eq $keyNormalized) {
+            $found = $key
+            break
+        }
+    }
+    if ($found) {
+        $target_name = $found
+    } else {
+        Write-Host "Error: target '$target_name' does not exist"
+        exit 1
+    }
 }
 
 $script_args = $args[1..$args.Count]
