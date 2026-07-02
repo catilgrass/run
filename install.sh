@@ -23,14 +23,14 @@ echo "Done!"
 
 echo ""
 echo "Remove all example scripts? [Y/n]"
-read -r response
+read -r response < /dev/tty
 case "$response" in
     [nN]|[nN][oO])
         echo "Skipped."
         ;;
     *)
         echo "Removing example scripts..."
-        rm -f .run/src/bin/*
+        rm -rf .run/src/bin/
         echo "Done!"
         ;;
 esac
